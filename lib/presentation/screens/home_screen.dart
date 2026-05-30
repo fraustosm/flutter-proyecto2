@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/theme_provider.dart';
-import '../../data/datasources/unsplash_service.dart';
+import '../providers/gallery.provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -10,6 +10,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(themeProvider);
+    final galleryState = ref.watch(galleryProvider);
 
     final width = MediaQuery.of(context).size.width;
 
@@ -36,6 +37,7 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
+
       body: Column(
         children: [
           Padding(
@@ -45,49 +47,63 @@ class HomeScreen extends ConsumerWidget {
                 hintText: 'Search images...',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius:
+                      BorderRadius.circular(12),
                 ),
               ),
             ),
           ),
 
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(12),
-
-              gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount:
-                    width < 600
-                        ? 2
-                        : 4,
-
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+          if (galleryState.isLoading)
+            const Expanded(
+              child: Center(
+                child:
+                    CircularProgressIndicator(),
               ),
+            )
+          else if (galleryState.error != null)
+            Expanded(
+              child: Center(
+                child: Text(
+                  galleryState.error!,
+                ),
+              ),
+            )
+          else
+            Expanded(
+              child: GridView.builder(
+                padding:
+                    const EdgeInsets.all(12),
 
-              itemCount: 10,
+                gridDelegate:
+                    SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount:
+                      width < 600 ? 2 : 4,
 
-              itemBuilder: (context, index) {
-                return Card(
-                  clipBehavior: Clip.antiAlias,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
 
-                  child: Container(
-                    color: Colors.grey.shade300,
+                itemCount:
+                    galleryState.images.length,
 
-                    child: Center(
-                      child: Text(
-                        'Image ${index + 1}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                itemBuilder:
+                    (context, index) {
+                  final image =
+                      galleryState.images[index];
+
+                  return Card(
+                    clipBehavior:
+                        Clip.antiAlias,
+
+                    child: Image.network(
+                      image.imageUrl,
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
         ],
       ),
     );

@@ -5,19 +5,37 @@ import '../../data/repositories/gallery_repository_impl.dart';
 import 'gallery_state.dart';
 
 final galleryProvider =
-    StateNotifierProvider<
-        GalleryNotifier,
-        GalleryState>((ref) {
+    StateNotifierProvider<GalleryNotifier, GalleryState>((ref) {
   return GalleryNotifier();
 });
 
-class GalleryNotifier
-    extends StateNotifier<GalleryState> {
+class GalleryNotifier extends StateNotifier<GalleryState> {
+  GalleryNotifier() : super(GalleryState.initial()) {
+    loadImages();
+  }
 
-  GalleryNotifier()
-      : super(
-          GalleryState.initial(),
-        );
+  final repository = GalleryRepositoryImpl(
+    UnsplashService(),
+  );
 
+  Future<void> loadImages() async {
+    try {
+      state = state.copyWith(
+        isLoading: true,
+      );
+
+      final images =
+          await repository.getPhotos();
+
+      state = state.copyWith(
+        images: images,
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
+  }
 }
-
