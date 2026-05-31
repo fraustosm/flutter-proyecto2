@@ -64,6 +64,38 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
       );
     } catch (_) {}
   }
+Future<void> searchImages(
+  String query,
+) async {
+
+  try {
+
+    state = state.copyWith(
+      isLoading: true,
+      query: query,
+    );
+
+    final images =
+        await repository.searchPhotos(
+      query: query,
+    );
+
+    state = state.copyWith(
+      images: images,
+      isLoading: false,
+      page: 1,
+    );
+
+  } catch (e) {
+
+    state = state.copyWith(
+      isLoading: false,
+      error: e.toString(),
+    );
+
+  }
+}
+
 }
 
 

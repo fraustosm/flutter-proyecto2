@@ -25,5 +25,22 @@ class UnsplashService {
 
   return response.data;
 }
+
+Future<List<dynamic>> searchPhotos({
+  required String query,
+  int page = 1,
+}) async {
+  final response = await _dio.get(
+    '$_baseUrl/search/photos',
+    queryParameters: {
+      'client_id': _accessKey,
+      'query': query,
+      'page': page,
+      'per_page': 10,
+    },
+  );
+
+  return response.data['results'];
+}
   
 }

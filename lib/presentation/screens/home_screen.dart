@@ -79,6 +79,7 @@ class _HomeScreenState
           ),
         ],
       ),
+
       body: Column(
         children: [
 
@@ -86,11 +87,25 @@ class _HomeScreenState
             padding:
                 const EdgeInsets.all(16),
             child: TextField(
+              onSubmitted: (value) {
+
+                if (value.trim().isEmpty) {
+                  return;
+                }
+
+                ref
+                    .read(
+                      galleryProvider.notifier,
+                    )
+                    .searchImages(value);
+              },
+
               decoration: InputDecoration(
                 hintText:
                     'Search images...',
                 prefixIcon:
                     const Icon(Icons.search),
+
                 border:
                     OutlineInputBorder(
                   borderRadius:
@@ -173,6 +188,117 @@ class _HomeScreenState
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

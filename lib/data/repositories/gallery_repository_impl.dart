@@ -23,6 +23,27 @@ class GalleryRepositoryImpl implements GalleryRepository {
         )
         .toList();
   }
+@override
+Future<List<ImageModel>> searchPhotos({
+  required String query,
+  int page = 1,
+}) async {
+
+  final response =
+      await service.searchPhotos(
+    query: query,
+    page: page,
+  );
+
+  return response
+      .map<ImageModel>(
+        (json) => ImageModel.fromJson(
+          json as Map<String, dynamic>,
+        ),
+      )
+      .toList();
+}
+
 }
 
 
