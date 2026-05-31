@@ -10,7 +10,10 @@ final galleryProvider =
 });
 
 class GalleryNotifier extends StateNotifier<GalleryState> {
-  GalleryNotifier() : super(GalleryState.initial()) {
+  GalleryNotifier()
+      : super(
+          GalleryState.initial(),
+        ) {
     loadImages();
   }
 
@@ -25,11 +28,14 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
       );
 
       final images =
-          await repository.getPhotos();
+          await repository.getPhotos(
+        page: 1,
+      );
 
       state = state.copyWith(
         images: images,
         isLoading: false,
+        page: 1,
       );
     } catch (e) {
       state = state.copyWith(
@@ -38,4 +44,48 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
       );
     }
   }
+
+  Future<void> loadMore() async {
+    try {
+      final nextPage =
+          state.page + 1;
+
+      final newImages =
+          await repository.getPhotos(
+        page: nextPage,
+      );
+
+      state = state.copyWith(
+        page: nextPage,
+        images: [
+          ...state.images,
+          ...newImages,
+        ],
+      );
+    } catch (_) {}
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

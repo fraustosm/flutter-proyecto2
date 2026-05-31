@@ -9,15 +9,21 @@ class UnsplashService {
   static const String _accessKey =
       '17hsIENCdv0tpHOMStS4nZnf4Od-aU-GDFhidLS4hfU';
 
-  Future<List<dynamic>> fetchPhotos() async {
-    final response = await _dio.get(
-      '$_baseUrl/photos',
-      queryParameters: {
-        'client_id': _accessKey,
-        'per_page': 20,
-      },
-    );
+  
+  
+  Future<List<dynamic>> fetchPhotos({
+  int page = 1,
+}) async {
+  final response = await _dio.get(
+    '$_baseUrl/photos',
+    queryParameters: {
+      'client_id': _accessKey,
+      'page': page,
+      'per_page': 10,
+    },
+  );
 
-    return response.data;
-  }
+  return response.data;
+}
+  
 }

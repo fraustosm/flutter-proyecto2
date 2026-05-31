@@ -4,15 +4,55 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/theme_provider.dart';
 import '../providers/gallery.provider.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(themeProvider);
-    final galleryState = ref.watch(galleryProvider);
+  ConsumerState<HomeScreen> createState() =>
+      _HomeScreenState();
+}
 
-    final width = MediaQuery.of(context).size.width;
+class _HomeScreenState
+    extends ConsumerState<HomeScreen> {
+
+  final ScrollController _scrollController =
+      ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+
+        ref
+            .read(
+              galleryProvider.notifier,
+            )
+            .loadMore();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    final isDarkMode =
+        ref.watch(themeProvider);
+
+    final galleryState =
+        ref.watch(galleryProvider);
+
+    final width =
+        MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +66,9 @@ class HomeScreen extends ConsumerWidget {
           IconButton(
             onPressed: () {
               ref
-                  .read(themeProvider.notifier)
+                  .read(
+                    themeProvider.notifier,
+                  )
                   .toggleTheme();
             },
             icon: Icon(
@@ -37,31 +79,42 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-
       body: Column(
         children: [
+
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding:
+                const EdgeInsets.all(16),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search images...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
+                hintText:
+                    'Search images...',
+                prefixIcon:
+                    const Icon(Icons.search),
+                border:
+                    OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(12),
+                      BorderRadius.circular(
+                    12,
+                  ),
                 ),
               ),
             ),
           ),
 
-          if (galleryState.isLoading)
+          if (galleryState.isLoading &&
+              galleryState.images.isEmpty)
+
             const Expanded(
               child: Center(
                 child:
                     CircularProgressIndicator(),
               ),
             )
-          else if (galleryState.error != null)
+
+          else if (galleryState.error !=
+              null)
+
             Expanded(
               child: Center(
                 child: Text(
@@ -69,16 +122,25 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             )
+
           else
+
             Expanded(
               child: GridView.builder(
+                controller:
+                    _scrollController,
+
                 padding:
-                    const EdgeInsets.all(12),
+                    const EdgeInsets.all(
+                  12,
+                ),
 
                 gridDelegate:
                     SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount:
-                      width < 600 ? 2 : 4,
+                      width < 600
+                          ? 2
+                          : 4,
 
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
@@ -89,8 +151,10 @@ class HomeScreen extends ConsumerWidget {
 
                 itemBuilder:
                     (context, index) {
+
                   final image =
-                      galleryState.images[index];
+                      galleryState
+                          .images[index];
 
                   return Card(
                     clipBehavior:
@@ -109,3 +173,45 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
