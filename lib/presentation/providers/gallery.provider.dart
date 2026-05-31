@@ -3,6 +3,7 @@ import '../../data/datasources/unsplash_service.dart';
 import '../../data/repositories/gallery_repository_impl.dart';
 import 'gallery_state.dart';
 import '../../data/models/image_model.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 final galleryProvider =
     StateNotifierProvider<GalleryNotifier, GalleryState>((ref) {
@@ -21,14 +22,36 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
     UnsplashService(),
   );
 
+  Future<bool> hasConnection() async {
+    final connectivityResult =
+        await Connectivity().checkConnectivity();
+
+    return connectivityResult !=
+        ConnectivityResult.none;
+  }
+
   Future<void> loadImages() async {
     try {
+      final connected =
+          await hasConnection();
+
+      if (!connected) {
+        state = state.copyWith(
+          isOffline: true,
+          isLoading: false,
+        );
+
+        return;
+      }
+
       state = state.copyWith(
         isLoading: true,
         error: null,
+        isOffline: false,
       );
 
-      final images = await repository.getPhotos(
+      final images =
+          await repository.getPhotos(
         page: 1,
       );
 
@@ -50,10 +73,23 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
     String query,
   ) async {
     try {
+      final connected =
+          await hasConnection();
+
+      if (!connected) {
+        state = state.copyWith(
+          isOffline: true,
+          isLoading: false,
+        );
+
+        return;
+      }
+
       state = state.copyWith(
         isLoading: true,
         query: query,
         error: null,
+        isOffline: false,
       );
 
       final images =
@@ -78,7 +114,15 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
 
   Future<void> loadMore() async {
     try {
-      final nextPage = state.page + 1;
+      final connected =
+          await hasConnection();
+
+      if (!connected) {
+        return;
+      }
+
+      final nextPage =
+          state.page + 1;
 
       List<ImageModel> newImages;
 
@@ -105,74 +149,3 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
     } catch (_) {}
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -102,7 +102,7 @@ class _HomeScreenState
 
               decoration: InputDecoration(
                 hintText:
-                    'Search images...',
+                    'Buscar imagenes...',
                 prefixIcon:
                     const Icon(Icons.search),
 
@@ -126,6 +126,47 @@ class _HomeScreenState
                     CircularProgressIndicator(),
               ),
             )
+
+            else if (galleryState.isOffline)
+
+  Expanded(
+    child: Center(
+      child: Column(
+        mainAxisAlignment:
+            MainAxisAlignment.center,
+
+        children: [
+
+          const Icon(
+            Icons.wifi_off,
+            size: 64,
+          ),
+
+          const SizedBox(height: 16),
+
+          const Text(
+            'No hay conexión a internet',
+          ),
+
+          const SizedBox(height: 16),
+
+          ElevatedButton(
+            onPressed: () {
+              ref
+                  .read(
+                    galleryProvider.notifier,
+                  )
+                  .loadImages();
+            },
+
+            child: const Text(
+              'Reintentar',
+            ),
+          ),
+        ],
+      ),
+    ),
+  )
 
           else if (galleryState.error !=
               null)

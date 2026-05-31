@@ -6,6 +6,7 @@ class GalleryState {
   final String? error;
   final int page;
   final String query;
+  final bool isOffline;
 
   const GalleryState({
     required this.images,
@@ -13,6 +14,7 @@ class GalleryState {
     required this.error,
     required this.page,
     required this.query,
+    required this.isOffline,
   });
 
   factory GalleryState.initial() {
@@ -22,6 +24,7 @@ class GalleryState {
       error: null,
       page: 1,
       query: '',
+      isOffline: false,
     );
   }
 
@@ -31,13 +34,15 @@ class GalleryState {
     String? error,
     int? page,
     String? query,
+    bool? isOffline,
   }) {
     return GalleryState(
       images: images ?? this.images,
       isLoading: isLoading ?? this.isLoading,
-      error: error,
+      error: error ?? this.error,
       page: page ?? this.page,
       query: query ?? this.query,
+      isOffline: isOffline ?? this.isOffline,
     );
   }
 }
