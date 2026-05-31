@@ -4,6 +4,7 @@ import '../../data/repositories/gallery_repository_impl.dart';
 import 'gallery_state.dart';
 import '../../data/models/image_model.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 
 final galleryProvider =
     StateNotifierProvider<GalleryNotifier, GalleryState>((ref) {
@@ -61,12 +62,20 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
         page: 1,
         query: '',
       );
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
-    }
+     } on DioException catch (_) {
+
+  state = state.copyWith(
+    isLoading: false,
+    error: 'No se puede conectar a Unsplash',
+  );
+
+} catch (_) {
+
+  state = state.copyWith(
+    isLoading: false,
+    error: 'Un error inesperado ocurrió',
+  );
+} 
   }
 
   Future<void> searchImages(
@@ -98,16 +107,32 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
         page: 1,
       );
 
+      if (images.isEmpty) {
+
+  state = state.copyWith(
+    images: [],
+    isLoading: false,
+    error: 'No images found',
+  );
+
+  return;
+}
+
       state = state.copyWith(
         images: images,
         isLoading: false,
         page: 1,
         query: query,
       );
-    } catch (e) {
+    } on DioException catch (_) {
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: 'No se puede conectar a Unsplash',
+      );
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Un error inesperado ocurrió',
       );
     }
   }

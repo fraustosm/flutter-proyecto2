@@ -173,9 +173,48 @@ class _HomeScreenState
 
             Expanded(
               child: Center(
-                child: Text(
-                  galleryState.error!,
-                ),
+                child: Expanded(
+  child: Center(
+    child: Column(
+      mainAxisAlignment:
+          MainAxisAlignment.center,
+
+      children: [
+
+        const Icon(
+          Icons.error_outline,
+          size: 64,
+        ),
+
+        const SizedBox(height: 16),
+
+        Text(
+          galleryState.error!,
+          textAlign:
+              TextAlign.center,
+        ),
+
+        const SizedBox(height: 16),
+
+        ElevatedButton(
+          onPressed: () {
+
+            ref
+                .read(
+                  galleryProvider
+                      .notifier,
+                )
+                .loadImages();
+          },
+
+          child: const Text(
+            'Reintentar',
+          ),
+        ),
+      ],
+    ),
+  ),
+),
               ),
             )
 
